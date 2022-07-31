@@ -1,5 +1,5 @@
 import {Dimensions, StyleSheet} from 'react-native';
-import React from 'react';
+import * as React from 'react';
 import {
   AddIcon,
   Box,
@@ -9,49 +9,24 @@ import {
   ChevronRightIcon,
   Fab,
   HStack,
+  Skeleton,
   Text,
+  VStack,
 } from 'native-base';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {PieChart} from 'react-native-chart-kit';
+import {ProgressChart} from 'react-native-chart-kit';
+import {chartDataType} from './home.types';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {goCreateTransaction} from './funtions';
 
-const HomeScreen = () => {
-  const data = [
-    {
-      name: 'Seoul',
-      population: 21500000,
-      color: 'rgba(131, 167, 234, 1)',
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 15,
-    },
-    {
-      name: 'Toronto',
-      population: 2800000,
-      color: '#F00',
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 15,
-    },
-    {
-      name: 'Beijing',
-      population: 527612,
-      color: 'red',
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 15,
-    },
-    {
-      name: 'New York',
-      population: 8538000,
-      color: '#ffffff',
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 15,
-    },
-    {
-      name: 'Moscow',
-      population: 11920000,
-      color: 'rgb(0, 0, 255)',
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 15,
-    },
-  ];
+const screenWidth = Dimensions.get('window').width;
+
+const HomeScreen = ({navigation}: NativeStackScreenProps<any>) => {
+  const [working, setWorking] = React.useState(true);
+  const data = {
+    labels: ['Ingresos', 'Gastos'], // optional
+    data: [0.4, 0.6],
+  };
 
   const chartConfig = {
     backgroundColor: '#e26a00',
@@ -59,9 +34,10 @@ const HomeScreen = () => {
     backgroundGradientTo: '#ffa726',
     decimalPlaces: 2, // optional, defaults to 2dp
     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    // labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     style: {
       borderRadius: 16,
+      padding: 15,
     },
     propsForDots: {
       r: '6',
@@ -70,23 +46,48 @@ const HomeScreen = () => {
     },
   };
 
+  if (working) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Center w="100%">
+          <VStack
+            w="90%"
+            maxW="400"
+            borderWidth="1"
+            space={6}
+            rounded="md"
+            alignItems="center"
+            _dark={{
+              borderColor: 'coolGray.500',
+            }}
+            _light={{
+              borderColor: 'coolGray.200',
+            }}>
+            <Skeleton h="40" />
+            <Skeleton.Text />
+          </VStack>
+        </Center>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Center>
-        <HStack space={3} justifyContent="center" alignItems={'center'}>
+        <HStack space={15} justifyContent="center" alignItems={'center'}>
           <Button leftIcon={<ChevronLeftIcon />} variant={'ghost'} />
           <Text fontSize={'lg'}>{new Date().getMonth()}</Text>
           <Button rightIcon={<ChevronRightIcon />} variant={'ghost'} />
         </HStack>
 
-        <PieChart
+        <ProgressChart
           data={data}
-          width={Dimensions.get('screen').width}
-          height={200}
+          width={screenWidth}
+          height={220}
+          strokeWidth={16}
+          radius={32}
           chartConfig={chartConfig}
-          accessor={'population'}
-          backgroundColor={'transparent'}
-          paddingLeft={'15'}
+          hideLegend={false}
         />
       </Center>
       <Fab
@@ -94,6 +95,7 @@ const HomeScreen = () => {
         renderInPortal={false}
         shadow={2}
         icon={<AddIcon />}
+        onPress={() => goCreateTransaction(navigation)}
       />
     </SafeAreaView>
   );

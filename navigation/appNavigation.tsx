@@ -2,6 +2,7 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeScreen from '../src/home';
 import {AddIcon, Icon, View} from 'native-base';
+import AddTransactionScreen from '../src/transactions/add-transaction/add-transaction';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +14,14 @@ const AppNavigation = () => {
         component={HomeScreen}
         options={{
           title: 'Mis gastos',
+          headerTitleAlign: 'center',
+        }}
+      />
+      <Stack.Screen
+        name="AddTransactionScreen"
+        component={AddTransactionScreen}
+        options={{
+          title: 'Añadir',
           headerTitleAlign: 'center',
         }}
       />
